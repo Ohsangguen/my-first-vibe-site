@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OINS · 대학 영어 AI 채점·피드백 플랫폼</title>
+  <meta name="description" content="오인스(OINS) — KAIST EFL과 함께 만드는 대학 영어 AI 채점·피드백 플랫폼. 에세이·프레젠테이션 채점, 학생 동의 관리, 교수 대시보드." />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand: #003876;
+      --brand-2: #1E5AA8;
+      --ink: #0a0a0a;
+      --sub: #4a5565;
+      --muted: #717182;
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --line: #e5e7eb;
+      --accent: #d97706;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; max-width: 1080px; margin: 0 auto; }
+    .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--brand); }
+    .logo span { color: var(--accent); }
+    .nav-cta {
+      display: inline-block; padding: 8px 16px; border-radius: 999px;
+      background: var(--brand); color: white; font-size: 14px; font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* Hero */
+    .hero { padding: 72px 0 56px; }
+    .kicker {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      background: rgba(0,56,118,0.08); color: var(--brand);
+      font-size: 13px; font-weight: 700; margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(32px, 6vw, 52px); line-height: 1.2; letter-spacing: -0.03em;
+      font-weight: 800; margin-bottom: 20px;
+    }
+    h1 span { color: var(--brand); }
+    .lead { font-size: clamp(16px, 2.2vw, 19px); color: var(--sub); max-width: 640px; margin-bottom: 32px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn-primary, .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px;
+      border-radius: 12px; font-weight: 700; font-size: 15px;
+      text-decoration: none; transition: transform 0.1s;
+    }
+    .btn-primary { background: var(--brand); color: white; }
+    .btn-primary:hover { background: var(--brand-2); transform: translateY(-1px); }
+    .btn-secondary { background: white; color: var(--brand); border: 1.5px solid var(--brand); }
+    .btn-secondary:hover { background: rgba(0,56,118,0.04); }
+
+    /* Sections */
+    section { padding: 56px 0; }
+    .section-title { font-size: clamp(24px, 4vw, 32px); font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .section-sub { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
+
+    /* Services grid */
+    .grid {
+      display: grid; gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 24px;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); transform: translateY(-2px); }
+    .card-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(0,56,118,0.08); color: var(--brand);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 16px;
+    }
+    .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .card p { color: var(--sub); font-size: 14px; line-height: 1.65; }
+
+    /* Why us */
+    .why {
+      background: white; border: 1px solid var(--line); border-radius: 20px;
+      padding: 40px; margin-top: 40px;
+    }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+    }
+    .why-item .num {
+      font-size: 32px; font-weight: 800; color: var(--brand);
+      display: block; margin-bottom: 6px; letter-spacing: -0.02em;
+    }
+    .why-item p { color: var(--sub); font-size: 14px; }
+
+    /* Contact */
+    .contact {
+      background: linear-gradient(135deg, #003876 0%, #1E5AA8 100%);
+      color: white; border-radius: 20px; padding: 56px 40px;
+      text-align: center; margin: 24px 0 56px;
+    }
+    .contact h2 { color: white; font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+    .contact p { color: rgba(255,255,255,0.85); font-size: 16px; margin-bottom: 24px; }
+    .contact .btn-white {
+      display: inline-block; padding: 16px 32px; border-radius: 12px;
+      background: white; color: var(--brand); font-weight: 700; font-size: 16px;
+      text-decoration: none;
+    }
+    .contact .btn-white:hover { background: #f0f4fa; }
+    .contact-meta { margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.7); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--line); padding: 32px 0; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* Mobile */
+    @media (max-width: 720px) {
+      .grid, .why-grid { grid-template-columns: 1fr; }
+      .why { padding: 24px; }
+      .contact { padding: 40px 24px; }
+      .hero { padding: 40px 0 32px; }
+      section { padding: 40px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="logo">O<span>·</span>INS</div>
+      <a href="#contact" class="nav-cta">문의하기</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <span class="kicker">KAIST EFL 공식 파트너</span>
+      <h1>대학 영어를 위한<br>AI 채점·피드백 <span>플랫폼</span></h1>
+      <p class="lead">
+        수백 명의 에세이·프레젠테이션을 몇 분 안에 채점하고, 학생마다 맞춤형 피드백을
+        만들어 냅니다. 교수님은 검토와 코멘트에, 학생은 성장 자체에 집중할 수 있습니다.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">데모 신청 →</a>
+        <a href="#services" class="btn-secondary">서비스 살펴보기</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="services">
+    <div class="wrap">
+      <h2 class="section-title">핵심 서비스</h2>
+      <p class="section-sub">채점 · 피드백 · 관리까지 하나의 워크플로우로.</p>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-icon">📝</div>
+          <h3>AI 에세이 채점</h3>
+          <p>ADW·IRW·SW 루브릭 기반 자동 채점. 9개 하위 기준별 점수와 근거 근거 bullets을 함께 산출합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎤</div>
+          <h3>AI 프레젠테이션 평가</h3>
+          <p>ISL·EPD 스피치 루브릭으로 전달력·발음·구성을 정량 평가. 자동 트랜스크립트에 정확한 3:30 지점까지 표시합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💬</div>
+          <h3>맞춤형 피드백 리포트</h3>
+          <p>What worked / Priority / Practice / Remember 구조로 학생이 다음에 무엇을 연습해야 할지 명확히 짚어줍니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎓</div>
+          <h3>교수 대시보드</h3>
+          <p>분반 통계, 학생별 세부 근거, 태그·메모, 엑셀 내보내기까지 채점 관리 전 과정을 한 화면에서.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔐</div>
+          <h3>학생 동의 관리</h3>
+          <p>AI 학습 활용 동의를 학기별로 안전하게 수집. 이메일 인증 · Google Sheets 자동 저장 · 학생 자율 철회 지원.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📤</div>
+          <h3>결과 공유·다운로드</h3>
+          <p>Report + Feedback을 원클릭으로 학생에게 공개하거나, Word·PDF·ZIP 형태로 일괄 다운로드.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">숫자로 보는 OINS</h2>
+      <p class="section-sub">2026 여름학기 KAIST EFL 실운영 기준.</p>
+
+      <div class="why">
+        <div class="why-grid">
+          <div class="why-item">
+            <span class="num">10+</span>
+            <p><strong>정규 분반</strong> 지원 (ADW · IRW · SW · ISL · EPD)</p>
+          </div>
+          <div class="why-item">
+            <span class="num">200+</span>
+            <p><strong>학생 계정</strong> 서비스 중 · 학기 자동 롤오버</p>
+          </div>
+          <div class="why-item">
+            <span class="num">&lt; 30초</span>
+            <p><strong>한 편당 채점</strong> · 사람 검토용 근거 bullets 포함</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="wrap">
+    <div class="contact">
+      <h2>도입 상담이 필요하신가요?</h2>
+      <p>영어 프로그램 운영진·연구자·학원 관계자 모두 환영합니다. 24시간 내 회신드립니다.</p>
+      <a href="mailto:oinsnio24@gmail.com?subject=OINS%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98" class="btn-white">✉ oinsnio24@gmail.com 로 문의하기</a>
+      <div class="contact-meta">
+        운영: OINS · 파트너 사이트: <a href="https://kaist-efl.oins.co.kr" style="color: white; text-decoration: underline;">kaist-efl.oins.co.kr</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      © 2026 OINS · 대학 영어 AI 채점·피드백 플랫폼 · Made for KAIST EFL
+    </div>
+  </footer>
+
+</body>
+</html>
