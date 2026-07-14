@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OINS · 도입 상담 신청</title>
-  <meta name="description" content="OINS 도입을 검토 중인 대학 영어 프로그램 담당자를 위한 상담 신청 페이지." />
+  <title>OINS · 대학 영어 AI 채점·피드백 플랫폼 — 30초 채점 · 근거 있는 피드백</title>
+  <meta name="description" content="OINS(오인스) — KAIST EFL 파트너. 프로그램 고유 루브릭 그대로 30초 안에 채점 초안과 근거 bullets 생성. 학기당 100~300명 규모 대학 EFL 담당자를 위한 AI 채점·피드백 플랫폼. 파일럿 도입 상담." />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -37,42 +37,111 @@
     /* Nav */
     nav {
       position: sticky; top: 0; z-index: 10;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.9);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--line);
     }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; max-width: 1180px; margin: 0 auto; }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; max-width: 1180px; margin: 0 auto; gap: 12px; }
     .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--brand); text-decoration: none; }
     .logo span { color: var(--accent); }
-    .nav-back {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 14px; border-radius: 999px;
-      background: transparent; color: var(--sub); font-size: 13px; font-weight: 600;
-      text-decoration: none; border: 1px solid var(--line);
+    .nav-links { display: flex; gap: 6px; align-items: center; }
+    .nav-link {
+      padding: 7px 12px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: var(--sub);
+      text-decoration: none;
       transition: background 0.15s, color 0.15s;
     }
-    .nav-back:hover { background: white; color: var(--brand); }
+    .nav-link:hover { background: rgba(0,56,118,0.06); color: var(--brand); }
+    .nav-cta {
+      display: inline-block; padding: 8px 16px; border-radius: 999px;
+      background: var(--brand); color: white; font-size: 13px; font-weight: 700;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .nav-cta:hover { background: var(--brand-2); }
+    @media (max-width: 520px) {
+      .nav-link { display: none; }
+    }
 
     /* Hero */
-    .hero { padding: 44px 0 20px; }
+    .hero { padding: 64px 0 40px; }
     .kicker {
       display: inline-block; padding: 6px 12px; border-radius: 999px;
       background: rgba(0,56,118,0.08); color: var(--brand);
-      font-size: 12px; font-weight: 700; margin-bottom: 14px;
+      font-size: 12.5px; font-weight: 700; margin-bottom: 18px;
       letter-spacing: 0.02em;
     }
     h1 {
-      font-size: clamp(24px, 4.4vw, 34px); line-height: 1.25; letter-spacing: -0.02em;
-      font-weight: 800; margin-bottom: 12px;
+      font-size: clamp(28px, 5.2vw, 46px); line-height: 1.2; letter-spacing: -0.03em;
+      font-weight: 800; margin-bottom: 18px;
     }
     h1 span { color: var(--brand); }
-    .lead { font-size: 15px; color: var(--sub); max-width: 640px; }
+    .lead { font-size: clamp(15px, 2.1vw, 18px); color: var(--sub); max-width: 660px; margin-bottom: 28px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn-primary, .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px;
+      border-radius: 12px; font-weight: 700; font-size: 15px;
+      text-decoration: none; transition: transform 0.1s, background 0.15s;
+      cursor: pointer; border: none;
+    }
+    .btn-primary { background: var(--brand); color: white; }
+    .btn-primary:hover { background: var(--brand-2); transform: translateY(-1px); }
+    .btn-secondary { background: white; color: var(--brand); border: 1.5px solid var(--brand); }
+    .btn-secondary:hover { background: rgba(0,56,118,0.04); }
 
-    /* Grid */
+    /* Sections */
+    section { padding: 56px 0; }
+    .section-title { font-size: clamp(22px, 3.6vw, 30px); font-weight: 800; margin-bottom: 10px; letter-spacing: -0.02em; }
+    .section-sub { color: var(--muted); font-size: 15px; margin-bottom: 36px; }
+
+    /* Services grid */
+    .services-grid {
+      display: grid; gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .svc-card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 16px; padding: 24px;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .svc-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.06); transform: translateY(-2px); }
+    .svc-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: rgba(0,56,118,0.08); color: var(--brand);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 16px;
+    }
+    .svc-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .svc-card p { color: var(--sub); font-size: 14px; line-height: 1.65; }
+    @media (max-width: 860px) { .services-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .services-grid { grid-template-columns: 1fr; } }
+
+    /* Why us */
+    .why {
+      background: white; border: 1px solid var(--line); border-radius: 20px;
+      padding: 40px;
+    }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+    }
+    .why-item .num {
+      font-size: 32px; font-weight: 800; color: var(--brand);
+      display: block; margin-bottom: 6px; letter-spacing: -0.02em;
+    }
+    .why-item p { color: var(--sub); font-size: 14px; }
+    @media (max-width: 720px) {
+      .why-grid { grid-template-columns: 1fr; gap: 20px; }
+      .why { padding: 24px; }
+    }
+
+    /* Inquiry section (Day 04 유지) */
+    .inquiry-band {
+      background: linear-gradient(180deg, var(--bg) 0%, #f0f4fa 100%);
+      padding: 56px 0;
+    }
     .grid {
       display: grid; gap: 24px;
       grid-template-columns: 1fr 1.05fr;
-      padding: 20px 0 56px;
       align-items: start;
     }
     @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
@@ -243,8 +312,28 @@
     .empty-title { font-size: 14.5px; font-weight: 700; color: var(--sub); margin-bottom: 4px; }
     .empty-desc { font-size: 12.5px; color: var(--muted); }
 
+    /* Contact CTA */
+    .contact {
+      background: linear-gradient(135deg, #003876 0%, #1E5AA8 100%);
+      color: white; border-radius: 20px; padding: 48px 40px;
+      text-align: center; margin: 24px 0 40px;
+    }
+    .contact h2 { color: white; font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    .contact p { color: rgba(255,255,255,0.9); font-size: 15px; margin-bottom: 22px; }
+    .contact .btn-white {
+      display: inline-block; padding: 14px 28px; border-radius: 12px;
+      background: white; color: var(--brand); font-weight: 700; font-size: 15px;
+      text-decoration: none;
+    }
+    .contact .btn-white:hover { background: #f0f4fa; }
+    .contact-meta { margin-top: 14px; font-size: 12.5px; color: rgba(255,255,255,0.75); }
+    @media (max-width: 560px) {
+      .contact { padding: 36px 24px; }
+      .contact h2 { font-size: 22px; }
+    }
+
     /* Footer */
-    footer { border-top: 1px solid var(--line); padding: 24px 0; text-align: center; color: var(--muted); font-size: 12.5px; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; text-align: center; color: var(--muted); font-size: 12.5px; }
     footer a { color: var(--brand); text-decoration: underline; }
 
     /* Small helpers */
@@ -253,116 +342,218 @@
       padding: 2px 8px; border-radius: 999px;
       background: rgba(0,56,118,0.08); color: var(--brand);
     }
+    code.inline {
+      font-size: 12px; background: var(--bg); padding: 1px 5px; border-radius: 3px;
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    }
   </style>
 </head>
 <body>
 
   <nav>
     <div class="nav-inner">
-      <a href="./index.html" class="logo">O<span>·</span>INS</a>
-      <a href="./intro.html" class="nav-back">← 소개 페이지</a>
+      <a href="#top" class="logo">O<span>·</span>INS</a>
+      <div class="nav-links">
+        <a href="#services" class="nav-link">서비스</a>
+        <a href="#numbers" class="nav-link">숫자</a>
+        <a href="#inquiry" class="nav-link">도입 상담</a>
+      </div>
+      <a href="#inquiry" class="nav-cta">상담 신청</a>
     </div>
   </nav>
 
-  <header class="hero wrap">
-    <span class="kicker">B-04-O1 · Day 04 · localStorage 저장</span>
-    <h1>대학 영어 프로그램을 위한 <span>도입 상담</span> 신청</h1>
+  <!-- 상단 · 히어로 (PRD 가치 반영) -->
+  <header id="top" class="hero wrap">
+    <span class="kicker">KAIST EFL 공식 파트너 · 학기당 100~300명 규모 대학 EFL 담당자용</span>
+    <h1>수백 편의 에세이·스피치를<br><span>30초 안에 채점</span>하고,<br>학생이 다음에 뭘 고쳐야 할지 알려줍니다</h1>
     <p class="lead">
-      학교 규모(분반 수·학생 수)와 담당 프로그램을 짧게 남겨주시면 <b>24시간 안에</b> 파일럿 도입 상담으로 회신드립니다.
-      기존 KAIST EFL 실운영 사례를 바탕으로 안내드립니다.
+      ADW·IRW·SW의 9개 하위기준, ISL·EPD의 5개 카테고리 <b>프로그램 고유 루브릭 그대로</b>.
+      교수님은 override와 코멘트에만 시간을 쓰고, 학생은 근거 있는 What worked / Priority / Practice / Remember 피드백을 받습니다.
     </p>
+    <div class="hero-actions">
+      <a href="#inquiry" class="btn-primary">도입 상담 신청 ↓</a>
+      <a href="#services" class="btn-secondary">서비스 살펴보기</a>
+    </div>
   </header>
 
-  <main class="wrap grid">
+  <!-- 중단 · 서비스 -->
+  <section id="services">
+    <div class="wrap">
+      <h2 class="section-title">핵심 서비스</h2>
+      <p class="section-sub">채점 · 피드백 · 프로그램 운영까지 하나의 워크플로우로.</p>
 
-    <!-- 좌 · 입력 폼 -->
-    <section class="card" aria-labelledby="formTitle">
-      <div class="card-head">
-        <h2 id="formTitle">
-          <span class="badge">1</span>
-          상담 신청 폼
-        </h2>
-        <p>모든 필수 항목(*)을 채우고 <b>상담 신청</b>을 누르면 오른쪽 목록에 접수됩니다.</p>
+      <div class="services-grid">
+        <div class="svc-card">
+          <div class="svc-icon">📝</div>
+          <h3>AI 에세이 채점</h3>
+          <p>ADW·IRW·SW 루브릭 기반 자동 채점. 9개 하위 기준별 점수와 근거 bullets을 함께 산출해 사람 채점과 비교·이의제기가 가능합니다.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🎤</div>
+          <h3>AI 프레젠테이션 평가</h3>
+          <p>ISL·EPD 스피치 루브릭으로 전달력·발음·구성을 정량 평가. 학생이 실제로 발화를 시작한 시점 기준의 3:30 마커를 자동 표시.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">💬</div>
+          <h3>맞춤형 피드백 리포트</h3>
+          <p>What worked / Priority / Practice / Remember 구조로 학생이 다음에 무엇을 연습해야 할지 명확히 짚어줍니다.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🎓</div>
+          <h3>교수 대시보드</h3>
+          <p>분반 통계, 학생별 세부 근거, 태그·메모, override + prof_notes, 엑셀 내보내기까지 채점 관리 전 과정을 한 화면에서.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🔐</div>
+          <h3>학생 동의 관리</h3>
+          <p>AI 학습 활용 동의를 학기별로 안전하게 수집. 이메일 인증 · Google Sheets 자동 저장 · 학생 자율 철회 지원.</p>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">📤</div>
+          <h3>결과 공유·다운로드</h3>
+          <p>Report + Feedback을 원클릭으로 학생에게 공개하거나, Word·PDF·ZIP 형태로 일괄 다운로드.</p>
+        </div>
       </div>
-      <form id="inquiryForm" novalidate>
-        <div class="field" id="fSchool">
-          <label for="school">학교 · 기관명 <span class="req">*</span></label>
-          <input id="school" name="school" placeholder="예: KAIST · 한국과학기술원" required />
-          <span class="err">학교/기관명을 입력해 주세요.</span>
-        </div>
+    </div>
+  </section>
 
-        <div class="row-2">
-          <div class="field" id="fName">
-            <label for="contactName">담당자 이름 <span class="req">*</span></label>
-            <input id="contactName" name="contactName" placeholder="예: 홍길동" required />
-            <span class="err">담당자 이름을 입력해 주세요.</span>
-          </div>
-          <div class="field" id="fEmail">
-            <label for="email">이메일 <span class="req">*</span></label>
-            <input id="email" name="email" type="email" placeholder="example@kaist.ac.kr" required />
-            <span class="err" id="emailErr">이메일 형식을 확인해 주세요.</span>
-          </div>
-        </div>
+  <!-- 중단 · 숫자 -->
+  <section id="numbers">
+    <div class="wrap">
+      <h2 class="section-title">숫자로 보는 OINS</h2>
+      <p class="section-sub">2026 여름학기 KAIST EFL 실운영 기준.</p>
 
-        <div class="row-2">
-          <div class="field" id="fProgram">
-            <label for="program">담당 프로그램 <span class="req">*</span></label>
-            <select id="program" name="program" required>
-              <option value="">— 선택 —</option>
-              <option>ADW (Advanced English Writing)</option>
-              <option>IRW (Intermediate Reading & Writing)</option>
-              <option>SW (Scientific Writing)</option>
-              <option>ISL (Intermediate Speaking & Listening)</option>
-              <option>EPD (English Presentation & Discussion)</option>
-              <option>여러 코스 함께</option>
-              <option>아직 미정 · 상담 후 결정</option>
-            </select>
-            <span class="err">프로그램을 선택해 주세요.</span>
+      <div class="why">
+        <div class="why-grid">
+          <div class="why-item">
+            <span class="num">10+</span>
+            <p><strong>정규 분반</strong> 지원 (ADW · IRW · SW · ISL · EPD)</p>
           </div>
-          <div class="field" id="fSize">
-            <label for="size">학기당 학생 수 <span class="req">*</span></label>
-            <input id="size" name="size" type="number" min="1" step="1" placeholder="예: 200" required />
-            <span class="err" id="sizeErr">학생 수를 숫자로 입력해 주세요.</span>
+          <div class="why-item">
+            <span class="num">200+</span>
+            <p><strong>학생 계정</strong> 서비스 중 · 학기 자동 롤오버</p>
+          </div>
+          <div class="why-item">
+            <span class="num">&lt; 30초</span>
+            <p><strong>한 편당 채점</strong> · 사람 검토용 근거 bullets 포함</p>
           </div>
         </div>
-
-        <div class="field">
-          <label for="term">관심 학기 <span style="color: var(--muted); font-weight:500;">(선택)</span></label>
-          <select id="term" name="term">
-            <option>2026 Fall (가을)</option>
-            <option>2027 Spring (봄)</option>
-            <option>2027 Summer (여름)</option>
-            <option>다른 시기 · 미정</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="note">문의 내용 <span style="color: var(--muted); font-weight:500;">(선택)</span></label>
-          <textarea id="note" name="note" placeholder="현재 사용 중인 채점 방식, 도입 시점, 예산, 궁금한 점 등을 자유롭게 적어주세요."></textarea>
-        </div>
-
-        <button class="submit-btn" type="submit" id="submitBtn">상담 신청</button>
-      </form>
-    </section>
-
-    <!-- 우 · 목록 -->
-    <section class="card" aria-labelledby="listTitle">
-      <div class="card-head">
-        <h2 id="listTitle">
-          <span class="badge">2</span>
-          접수된 상담
-        </h2>
-        <p>브라우저 <code style="font-size:12px; background:var(--bg); padding:1px 5px; border-radius:3px;">localStorage</code>에 저장 · 새로고침해도 유지 · 이 브라우저 안에서만</p>
       </div>
-      <div class="list-count" id="countLine">
-        <span>지금까지 <b>0</b>건 접수</span>
-        <button id="clearBtn" class="clear-btn" type="button" style="display:none;">🗑 전체 초기화</button>
+    </div>
+  </section>
+
+  <!-- 하단 · 상담 폼 + 목록 (Day 04 저장 그대로) -->
+  <section id="inquiry" class="inquiry-band">
+    <div class="wrap">
+      <h2 class="section-title">도입 상담 신청</h2>
+      <p class="section-sub">
+        학교 규모(분반 수·학생 수)와 담당 프로그램을 짧게 남겨주시면 <b>24시간 안에</b> 파일럿 도입 상담으로 회신드립니다.
+        기존 KAIST EFL 실운영 사례를 바탕으로 안내드립니다.
+      </p>
+
+      <div class="grid">
+        <!-- 좌 · 입력 폼 -->
+        <section class="card" aria-labelledby="formTitle">
+          <div class="card-head">
+            <h2 id="formTitle">
+              <span class="badge">1</span>
+              상담 신청 폼
+            </h2>
+            <p>모든 필수 항목(*)을 채우고 <b>상담 신청</b>을 누르면 오른쪽 목록에 접수됩니다.</p>
+          </div>
+          <form id="inquiryForm" novalidate>
+            <div class="field" id="fSchool">
+              <label for="school">학교 · 기관명 <span class="req">*</span></label>
+              <input id="school" name="school" placeholder="예: KAIST · 한국과학기술원" required />
+              <span class="err">학교/기관명을 입력해 주세요.</span>
+            </div>
+
+            <div class="row-2">
+              <div class="field" id="fName">
+                <label for="contactName">담당자 이름 <span class="req">*</span></label>
+                <input id="contactName" name="contactName" placeholder="예: 홍길동" required />
+                <span class="err">담당자 이름을 입력해 주세요.</span>
+              </div>
+              <div class="field" id="fEmail">
+                <label for="email">이메일 <span class="req">*</span></label>
+                <input id="email" name="email" type="email" placeholder="example@kaist.ac.kr" required />
+                <span class="err" id="emailErr">이메일 형식을 확인해 주세요.</span>
+              </div>
+            </div>
+
+            <div class="row-2">
+              <div class="field" id="fProgram">
+                <label for="program">담당 프로그램 <span class="req">*</span></label>
+                <select id="program" name="program" required>
+                  <option value="">— 선택 —</option>
+                  <option>ADW (Advanced English Writing)</option>
+                  <option>IRW (Intermediate Reading & Writing)</option>
+                  <option>SW (Scientific Writing)</option>
+                  <option>ISL (Intermediate Speaking & Listening)</option>
+                  <option>EPD (English Presentation & Discussion)</option>
+                  <option>여러 코스 함께</option>
+                  <option>아직 미정 · 상담 후 결정</option>
+                </select>
+                <span class="err">프로그램을 선택해 주세요.</span>
+              </div>
+              <div class="field" id="fSize">
+                <label for="size">학기당 학생 수 <span class="req">*</span></label>
+                <input id="size" name="size" type="number" min="1" step="1" placeholder="예: 200" required />
+                <span class="err" id="sizeErr">학생 수를 숫자로 입력해 주세요.</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="term">관심 학기 <span style="color: var(--muted); font-weight:500;">(선택)</span></label>
+              <select id="term" name="term">
+                <option>2026 Fall (가을)</option>
+                <option>2027 Spring (봄)</option>
+                <option>2027 Summer (여름)</option>
+                <option>다른 시기 · 미정</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="note">문의 내용 <span style="color: var(--muted); font-weight:500;">(선택)</span></label>
+              <textarea id="note" name="note" placeholder="현재 사용 중인 채점 방식, 도입 시점, 예산, 궁금한 점 등을 자유롭게 적어주세요."></textarea>
+            </div>
+
+            <button class="submit-btn" type="submit" id="submitBtn">상담 신청</button>
+          </form>
+        </section>
+
+        <!-- 우 · 목록 -->
+        <section class="card" aria-labelledby="listTitle">
+          <div class="card-head">
+            <h2 id="listTitle">
+              <span class="badge">2</span>
+              접수된 상담
+            </h2>
+            <p>브라우저 <code class="inline">localStorage</code>에 저장 · 새로고침해도 유지 · 이 브라우저 안에서만</p>
+          </div>
+          <div class="list-count" id="countLine">
+            <span>지금까지 <b>0</b>건 접수</span>
+            <button id="clearBtn" class="clear-btn" type="button" style="display:none;">🗑 전체 초기화</button>
+          </div>
+          <div id="listArea" class="list" aria-live="polite">
+            <!-- 비어 있으면 empty state, 아니면 카드 -->
+          </div>
+        </section>
       </div>
-      <div id="listArea" class="list" aria-live="polite">
-        <!-- 비어 있으면 empty state, 아니면 카드 -->
+    </div>
+  </section>
+
+  <!-- 마무리 · 연락 CTA -->
+  <section class="wrap">
+    <div class="contact">
+      <h2>폼 대신 메일로 문의하고 싶으신가요?</h2>
+      <p>영어 프로그램 운영진·연구자·학원 관계자 모두 환영합니다. 24시간 내 회신드립니다.</p>
+      <a href="mailto:oinsnio24@gmail.com?subject=OINS%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98" class="btn-white">✉ oinsnio24@gmail.com</a>
+      <div class="contact-meta">
+        운영: OINS · 파트너 사이트: <a href="https://kaist-efl.oins.co.kr" style="color: white; text-decoration: underline;">kaist-efl.oins.co.kr</a>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
   <div class="toast" id="toast" role="status">
     <span>✓</span>
@@ -371,21 +562,21 @@
 
   <footer>
     <div class="wrap">
-      OINS · Day 04 실습 · Day 03 화면에 <code style="font-size:12px; background:var(--bg); padding:1px 5px; border-radius:3px;">localStorage</code>를 붙여 새로고침해도 접수 목록이 남도록 확장. 원본 <a href="./Day_02_시장조사/PRD_lite_v1.md">★ 핵심 유저 스토리 US-2</a>.
+      © 2026 OINS · 대학 영어 AI 채점·피드백 플랫폼 · Made for KAIST EFL · Week 01 통합본
     </div>
   </footer>
 
   <script>
-    // ─── localStorage 저장소 (Day 04) ───────────────────────────
-    // Day 03에서는 브라우저 memory 배열만 썼기 때문에 새로고침 시
-    // 데이터가 사라졌음. 오늘은 아래 세 함수로:
+    // ─── localStorage 저장소 (Day 04에서 그대로 이식) ───────────────────────────
+    // Day 03에서는 브라우저 memory 배열만 썼기 때문에 새로고침 시 데이터가 사라짐.
+    // Day 04에서 아래 세 함수로 확장:
     //  · 페이지가 열릴 때 localStorage에서 배열 복원 (Read)
     //  · Create/Delete/Clear 뒤 배열을 다시 저장 (Persist)
     //
-    // localStorage는 이 브라우저의 이 사이트 주소(origin) 안에서만
-    // 유지되는 사물함이라, 배포 URL과 localhost는 서로 다른 저장 칸을
-    // 사용함. 실제 고객 정보가 아니라 반드시 실습용 가짜 데이터로만
-    // 테스트.
+    // key `oins.inquiries.v1`은 Day 04와 동일. 스키마 변경 시 v2로 올려 마이그레이션.
+    // localStorage는 이 브라우저의 이 사이트 주소(origin) 안에서만 유지되는 사물함이라,
+    // 배포 URL과 localhost는 서로 다른 저장 칸을 사용함.
+    // 실제 고객 정보가 아니라 반드시 실습용 가짜 데이터로만 테스트.
 
     const STORAGE_KEY = 'oins.inquiries.v1';
 
@@ -441,9 +632,6 @@
     }
 
     // ─── 화면 다시 그리기 ───
-    // 배열 전체를 훑어서 목록 영역을 처음부터 새로 그린다.
-    // 배열이 비면 빈 상태 안내를 표시. 전체 초기화 버튼은 최소 1건
-    // 있을 때만 노출해서 실수 삭제 위험을 줄인다.
     function render() {
       const countSpan = countLine.querySelector('span');
       countSpan.innerHTML = '지금까지 <b>' + inquiries.length + '</b>건 접수';
@@ -481,7 +669,6 @@
     // ─── 유효성 검사 ───
     function validate(data) {
       let ok = true;
-      // 필수 필드
       const required = [
         ['school',      'fSchool'],
         ['contactName', 'fName'],
@@ -498,7 +685,6 @@
           wrapEl.classList.remove('error');
         }
       }
-      // 이메일 형식
       if (data.email && !emailRe.test(data.email)) {
         document.getElementById('fEmail').classList.add('error');
         document.getElementById('emailErr').textContent = '이메일 형식을 확인해 주세요 (예: name@school.ac.kr)';
@@ -506,7 +692,6 @@
       } else if (data.email) {
         document.getElementById('emailErr').textContent = '이메일 형식을 확인해 주세요.';
       }
-      // 학생 수: 양의 정수
       if (data.size && (isNaN(data.size) || Number(data.size) < 1)) {
         document.getElementById('fSize').classList.add('error');
         document.getElementById('sizeErr').textContent = '1 이상의 숫자를 입력해 주세요.';
@@ -528,20 +713,17 @@
 
     // ─── 폼 제출 ───
     form.addEventListener('submit', (e) => {
-      e.preventDefault();  // 페이지 새로고침 막기
+      e.preventDefault();
       const fd = new FormData(form);
       const data = Object.fromEntries(fd.entries());
       if (!validate(data)) {
         showToast('필수 항목을 확인해 주세요', 'error');
-        // 첫 번째 오류 필드로 스크롤
         const firstErr = form.querySelector('.error input, .error select, .error textarea');
         if (firstErr) firstErr.focus();
         return;
       }
-      // 로딩 상태 · 버튼 잠금
       submitBtn.disabled = true;
       submitBtn.textContent = '접수 중...';
-      // 실제 서버 저장은 없지만, 학습용으로 잠깐 기다리는 상태를 흉내
       setTimeout(() => {
         inquiries.push({
           id: 'i-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
@@ -554,7 +736,7 @@
           note:        (data.note || '').trim(),
           createdAt:   Date.now(),
         });
-        saveInquiries(inquiries);  // Create → 저장
+        saveInquiries(inquiries);
         render();
         form.reset();
         submitBtn.disabled = false;
@@ -563,7 +745,6 @@
       }, 800);
     });
 
-    // 필드 편집 시 오류 상태 즉시 해제
     form.addEventListener('input', (e) => {
       const wrap = e.target.closest('.field');
       if (wrap) wrap.classList.remove('error');
@@ -579,15 +760,12 @@
       if (!confirm(`"${name}" 상담을 삭제하시겠어요?\n삭제한 항목은 되돌릴 수 없습니다.`)) return;
       const idx = inquiries.findIndex(x => x.id === id);
       if (idx >= 0) inquiries.splice(idx, 1);
-      saveInquiries(inquiries);  // Delete → 저장
+      saveInquiries(inquiries);
       render();
       showToast('삭제했습니다');
     });
 
     // ─── 전체 초기화 — Clear ───
-    // localStorage.removeItem으로 이 사이트의 다른 저장 칸은 건드리지
-    // 않고 우리 key(oins.inquiries.v1) 하나만 비운다. localStorage.clear()는
-    // 사이트 전체 저장소를 비우므로 여기선 쓰지 않는다.
     clearBtn.addEventListener('click', () => {
       if (!confirm(`접수된 상담 ${inquiries.length}건을 모두 지우시겠어요?\n되돌릴 수 없습니다.`)) return;
       inquiries = [];
