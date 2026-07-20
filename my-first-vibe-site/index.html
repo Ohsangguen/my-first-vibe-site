@@ -685,8 +685,60 @@
     </div>
   </footer>
 
+  <!-- Day 11 · Supabase 리드 저장 (하이브리드: URL 미설정 시 localStorage 폴백) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    // ─── localStorage 저장소 (Day 04에서 그대로 이식) ───────────────────────────
+    // ─── Supabase 연동 설정 (Day 11 · B-11-O1) ───────────────────────────
+    // 값을 채우려면 Day_11_Supabase_리드/Supabase_설정_가이드.md 3~4단계 참고.
+    // 채우기 전에는 자동으로 localStorage만 사용 (Day 04 동작 그대로).
+    const SUPABASE_URL = '__FILL_ME_IN__';   // ← Project URL 붙여넣기
+    const SUPABASE_KEY = '__FILL_ME_IN__';   // ← anon public key 붙여넣기
+
+    // placeholder 감지 → 아직 URL 안 채워졌으면 supabase 저장 비활성 (localStorage만)
+    const SUPABASE_ENABLED =
+      SUPABASE_URL.startsWith('https://') &&
+      SUPABASE_URL.endsWith('.supabase.co') &&
+      SUPABASE_KEY.startsWith('eyJ');
+
+    const supabaseClient = SUPABASE_ENABLED
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      : null;
+
+    if (!SUPABASE_ENABLED) {
+      console.info(
+        '[OINS] Supabase URL/anon key가 아직 설정되지 않았습니다. ' +
+        'localStorage로만 저장됩니다. 설정 방법: Day_11_Supabase_리드/Supabase_설정_가이드.md'
+      );
+    } else {
+      console.info('[OINS] Supabase 서버 저장이 활성화되었습니다.');
+    }
+
+    // Supabase INSERT (하이브리드) — JS camelCase → SQL snake_case 매핑
+    async function saveToSupabase(data) {
+      if (!SUPABASE_ENABLED) return { ok: false, skipped: true };
+      try {
+        const { error } = await supabaseClient
+          .from('reservations')
+          .insert([{
+            school:       data.school,
+            contact_name: data.contactName,      // JS camelCase → SQL snake_case
+            email:        data.email,
+            program:      data.program,
+            size:         Number(data.size),     // integer로 캐스팅
+            term:         data.term || null,
+            note:         data.note || ''
+            // status·prof_notes는 서버 기본값·NULL로 (RLS WITH CHECK 통과)
+          }]);
+        if (error) throw error;
+        return { ok: true };
+      } catch (err) {
+        console.warn('[OINS] Supabase 저장 실패, localStorage 폴백:', err.message);
+        return { ok: false, error: err };
+      }
+    }
+
+    // ─── localStorage 저장소 (Day 04에서 그대로 유지 · 오프라인·백업용) ─────
     // Day 03에서는 브라우저 memory 배열만 썼기 때문에 새로고침 시 데이터가 사라짐.
     // Day 04에서 아래 세 함수로 확장:
     //  · 페이지가 열릴 때 localStorage에서 배열 복원 (Read)
@@ -831,7 +883,7 @@
     }
 
     // ─── 폼 제출 ───
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(form);
       const data = Object.fromEntries(fd.entries());
@@ -843,25 +895,44 @@
       }
       submitBtn.disabled = true;
       submitBtn.textContent = '접수 중...';
-      setTimeout(() => {
-        inquiries.push({
-          id: 'i-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-          school:      data.school.trim(),
-          contactName: data.contactName.trim(),
-          email:       data.email.trim(),
-          program:     data.program,
-          size:        data.size,
-          term:        data.term,
-          note:        (data.note || '').trim(),
-          createdAt:   Date.now(),
-        });
-        saveInquiries(inquiries);
-        render();
-        form.reset();
-        submitBtn.disabled = false;
-        submitBtn.textContent = '상담 신청';
+
+      // 정규화된 payload 준비
+      const payload = {
+        school:      data.school.trim(),
+        contactName: data.contactName.trim(),
+        email:       data.email.trim(),
+        program:     data.program,
+        size:        data.size,
+        term:        data.term,
+        note:        (data.note || '').trim(),
+      };
+
+      // 1) Supabase에 먼저 저장 시도 (활성화된 경우) → 실패해도 localStorage 폴백
+      const svr = await saveToSupabase(payload);
+
+      // 2) localStorage에도 항상 저장 (오프라인 미러 · 관리자 브라우저 캐시)
+      inquiries.push({
+        id: 'i-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+        ...payload,
+        createdAt: Date.now(),
+        syncedToServer: svr.ok,   // 서버 저장 성공 여부 (Day 12~13에서 사용)
+      });
+      saveInquiries(inquiries);
+      render();
+      form.reset();
+      submitBtn.disabled = false;
+      submitBtn.textContent = '상담 신청';
+
+      // 3) 결과별 toast
+      if (svr.ok) {
+        showToast('상담이 접수되었습니다! 24시간 안에 회신드립니다.');
+      } else if (svr.skipped) {
+        // Supabase 미설정 상태 (로컬 데모 모드) — 기존 UX 유지
         showToast('상담이 접수되었습니다!');
-      }, 800);
+      } else {
+        // 서버 실패했지만 로컬엔 저장됨 — 사용자에게는 접수 인정
+        showToast('상담이 접수되었습니다 (오프라인 저장 · 서버 재시도 예정)');
+      }
     });
 
     form.addEventListener('input', (e) => {

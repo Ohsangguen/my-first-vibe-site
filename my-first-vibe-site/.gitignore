@@ -1,0 +1,17 @@
+# Supabase 환경 변수 - 절대 push 금지
+.env
+.env.local
+.env.local.*
+!.env.local.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Python (make_pptx/make_docx/make_hwpx 등 스크립트)
+__pycache__/
+*.pyc
