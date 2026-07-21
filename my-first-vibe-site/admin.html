@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>OINS · 관리자 대시보드</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand:   #003876;
+      --brand-2: #1E5AA8;
+      --ink:     #0a0a0a;
+      --sub:     #4a5565;
+      --muted:   #717182;
+      --bg:      #f5f7fb;
+      --card:    #ffffff;
+      --line:    #e5e7eb;
+      --line-soft: #f1f2f3;
+      --accent:  #d97706;
+
+      /* status 색상 */
+      --st-new:      #1E5AA8;
+      --st-new-bg:   #DBEAFE;
+      --st-contact:  #B45309;
+      --st-contact-bg: #FEF3C7;
+      --st-pilot:    #7C3AED;
+      --st-pilot-bg: #EDE9FE;
+      --st-closed:   #4B5563;
+      --st-closed-bg:#F3F4F6;
+    }
+    body {
+      font-family: 'Noto Sans KR', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      /* 인증 전 body를 숨겨 내용 깜빡 방지 */
+      visibility: hidden;
+    }
+    body.authed { visibility: visible; }
+
+    .wrap { max-width: 1360px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header */
+    header {
+      background: var(--brand);
+      color: white;
+      padding: 22px 0;
+      margin-bottom: 24px;
+    }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    header h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+    header h1 span { color: #F8B84E; }
+    header .meta { font-size: 12.5px; color: rgba(255,255,255,0.8); text-align: right; }
+    header .meta a { color: white; text-decoration: underline; }
+
+    /* KPI row */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .kpi-label { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+    .kpi-value { font-size: 26px; font-weight: 800; color: var(--brand); letter-spacing: -0.02em; }
+    .kpi-value.warn { color: var(--accent); }
+    .kpi-sub { font-size: 11.5px; color: var(--sub); margin-top: 2px; }
+    @media (max-width: 780px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* Toolbar */
+    .toolbar {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-box {
+      flex: 1 1 260px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .search-box svg { flex: none; color: var(--muted); }
+    .search-box input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--ink);
+      outline: none;
+      min-width: 120px;
+    }
+    .filter-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .filter-tab:hover { background: var(--bg); color: var(--brand); }
+    .filter-tab.active {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+    }
+    .filter-tab .count {
+      display: inline-block;
+      margin-left: 4px;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+    .btn-refresh {
+      padding: 8px 14px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .btn-refresh:hover { background: var(--bg); color: var(--brand); }
+
+    /* Table wrapper */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .table-scroll { overflow-x: auto; }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.data thead th {
+      background: #F9FAFB;
+      color: var(--sub);
+      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    table.data tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      vertical-align: top;
+    }
+    table.data tbody tr:hover td { background: #FAFBFD; }
+    table.data tbody tr:last-child td { border-bottom: none; }
+
+    .cell-time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .cell-school { font-weight: 700; color: var(--ink); }
+    .cell-contact { color: var(--sub); font-size: 12.5px; }
+    .cell-contact b { color: var(--ink); font-weight: 600; display: block; }
+    .cell-program { font-size: 12px; color: var(--sub); }
+    .cell-size { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+    .cell-size .unit { font-weight: 400; color: var(--muted); font-size: 11px; margin-left: 2px; }
+    .cell-term { font-size: 12px; color: var(--sub); white-space: nowrap; }
+    .cell-note {
+      max-width: 260px;
+      font-size: 12.5px;
+      color: var(--sub);
+    }
+    .cell-note textarea {
+      width: 100%;
+      min-height: 40px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      resize: vertical;
+      background: white;
+    }
+    .cell-note textarea:focus {
+      outline: none;
+      border-color: var(--brand-2);
+      box-shadow: 0 0 0 2px rgba(30,90,168,0.15);
+    }
+
+    /* Status select */
+    .status-select {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 10px;
+      padding-right: 26px;
+    }
+    .status-select.st-new     { background-color: var(--st-new-bg);     color: var(--st-new);     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%231E5AA8' fill='none' stroke-width='1.5'/></svg>"); }
+    .status-select.st-contact { background-color: var(--st-contact-bg); color: var(--st-contact); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%23B45309' fill='none' stroke-width='1.5'/></svg>"); }
+    .status-select.st-pilot   { background-color: var(--st-pilot-bg);   color: var(--st-pilot);   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%237C3AED' fill='none' stroke-width='1.5'/></svg>"); }
+    .status-select.st-closed  { background-color: var(--st-closed-bg);  color: var(--st-closed);  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%234B5563' fill='none' stroke-width='1.5'/></svg>"); }
+
+    /* Empty / loading / error */
+    .empty, .loading, .err {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+
+    .err {
+      background: #FEE2E2;
+      color: #7F1D1D;
+      border-radius: 8px;
+      margin: 12px 0;
+      padding: 14px;
+      font-size: 13px;
+      text-align: left;
+    }
+    .err code {
+      background: rgba(0,0,0,0.05);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    /* 접근 거부 화면 */
+    .denied {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+    }
+    .denied h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+    .denied p { font-size: 14px; color: var(--sub); max-width: 420px; }
+    .denied .lock-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #065F46;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 100;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.err { background: #7F1D1D; }
+
+    footer {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      header h1 { font-size: 17px; }
+      .kpi-value { font-size: 22px; }
+      .cell-note { max-width: 180px; }
+      table.data thead th { font-size: 10.5px; padding: 10px 10px; }
+      table.data tbody td { padding: 10px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <header>
+    <div class="wrap">
+      <h1>OINS<span> · </span>관리자 대시보드</h1>
+      <div class="meta">
+        <div id="lastSync">마지막 갱신: —</div>
+        <div>Day 13 · B-13-O1 · <a href="./index.html" target="_blank">랜딩 페이지</a></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- KPI -->
+    <section class="kpi-row" aria-label="핵심 지표">
+      <div class="kpi">
+        <div class="kpi-label">오늘 접수</div>
+        <div class="kpi-value" id="kpiToday">—</div>
+        <div class="kpi-sub">자정~현재</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">회신 대기 (신규)</div>
+        <div class="kpi-value warn" id="kpiNew">—</div>
+        <div class="kpi-sub">24시간 안 회신</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">파일럿 진행 중</div>
+        <div class="kpi-value" id="kpiPilot">—</div>
+        <div class="kpi-sub">현재 도입 논의</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">전체 리드 (누적)</div>
+        <div class="kpi-value" id="kpiTotal">—</div>
+        <div class="kpi-sub">reservations 테이블</div>
+      </div>
+    </section>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
+          <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input id="searchInput" type="text" placeholder="학교·담당자·이메일·프로그램 통합 검색…" autocomplete="off" />
+      </div>
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-status="all">전체 <span class="count" id="c-all">0</span></button>
+        <button class="filter-tab" data-status="new">신규 <span class="count" id="c-new">0</span></button>
+        <button class="filter-tab" data-status="contacted">회신함 <span class="count" id="c-contacted">0</span></button>
+        <button class="filter-tab" data-status="pilot">파일럿 <span class="count" id="c-pilot">0</span></button>
+        <button class="filter-tab" data-status="closed">종결 <span class="count" id="c-closed">0</span></button>
+      </div>
+      <button class="btn-refresh" id="btnRefresh" title="Supabase에서 다시 불러오기">↻ 새로고침</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <div id="tableStatus"></div>
+      <div class="table-scroll">
+        <table class="data" id="dataTable" style="display:none;">
+          <thead>
+            <tr>
+              <th>접수 시각</th>
+              <th>학교·기관</th>
+              <th>담당자 · 이메일</th>
+              <th>프로그램</th>
+              <th style="text-align:right;">학생 수</th>
+              <th>관심 학기</th>
+              <th>메모 (note)</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="dataBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>OINS · 관리자 전용 · robots noindex · 이 URL을 외부에 공유하지 마세요</footer>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // Day 13 · admin.html · OINS 관리자 대시보드
+    // ═══════════════════════════════════════════════════════
+
+    // ─── 접근 보호 · ?key= 확인 ───
+    // 본인만 아는 키. 코드에 그대로 노출되므로 "완벽한 보안"은 아니며,
+    // "우연한 노출" 방지 + 관리 URL을 외부 공유하지 않기 원칙과 결합.
+    // 프로덕션에서는 Supabase Auth 이메일 매직 링크로 교체.
+    const ADMIN_KEY = 'oins-admin-2026-osg';
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('key') !== ADMIN_KEY) {
+      document.body.style.visibility = 'visible';
+      document.body.innerHTML = `
+        <div class="denied">
+          <div class="lock-icon">🔒</div>
+          <h1>접근이 거부되었습니다</h1>
+          <p>이 페이지는 OINS 관리자 전용입니다. 인증 키가 필요합니다.</p>
+        </div>`;
+      throw new Error('Access denied: invalid or missing key');
+    }
+    document.body.classList.add('authed');
+
+    // ─── Supabase 연동 설정 (Day 11과 동일 · 하이브리드 감지) ───
+    const SUPABASE_URL = '__FILL_ME_IN__';   // ← index.html과 같은 Project URL
+    const SUPABASE_KEY = '__FILL_ME_IN__';   // ← index.html과 같은 anon public key
+
+    const SUPABASE_ENABLED =
+      SUPABASE_URL.startsWith('https://') &&
+      SUPABASE_URL.endsWith('.supabase.co') &&
+      SUPABASE_KEY.startsWith('eyJ');
+
+    if (!SUPABASE_ENABLED) {
+      renderError(
+        'Supabase URL/anon key가 아직 설정되지 않았습니다.',
+        'admin.html 상단의 <code>SUPABASE_URL</code>·<code>SUPABASE_KEY</code>를 index.html과 같은 값으로 채워 주세요. Day 11 설정 가이드 4단계 참고.'
+      );
+      throw new Error('Supabase not configured');
+    }
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ─── status 라벨 매핑 (한국어) ───
+    const STATUS_LABEL = {
+      new:       '신규',
+      contacted: '회신함',
+      pilot:     '파일럿',
+      closed:    '종결',
+    };
+
+    // ─── 상태 · 데이터 · UI 헬퍼 ───
+    let allData = [];                 // 서버에서 받은 원본 (필터 전)
+    let currentStatusFilter = 'all';  // 'all' | 'new' | 'contacted' | 'pilot' | 'closed'
+    let currentSearch = '';
+
+    const $ = (id) => document.getElementById(id);
+    const dataBody   = $('dataBody');
+    const dataTable  = $('dataTable');
+    const tblStatus  = $('tableStatus');
+    const searchInp  = $('searchInput');
+    const filterTabs = $('filterTabs');
+    const btnRefresh = $('btnRefresh');
+    const toastEl    = $('toast');
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      })[c]);
+    }
+
+    function fmtTime(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      const now = new Date();
+      const diffMs = now - d;
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 1) return '방금 전';
+      if (diffMin < 60) return `${diffMin}분 전`;
+      if (diffMin < 60 * 24) return `${Math.floor(diffMin / 60)}시간 전`;
+      const yy = String(d.getFullYear()).slice(2);
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mi = String(d.getMinutes()).padStart(2, '0');
+      return `${yy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    function isToday(iso) {
+      if (!iso) return false;
+      const d = new Date(iso);
+      const now = new Date();
+      return d.getFullYear() === now.getFullYear()
+          && d.getMonth()    === now.getMonth()
+          && d.getDate()     === now.getDate();
+    }
+
+    function toast(msg, kind = 'ok') {
+      toastEl.textContent = msg;
+      toastEl.classList.remove('err');
+      if (kind === 'err') toastEl.classList.add('err');
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2400);
+    }
+
+    function renderError(title, detailHtml) {
+      tblStatus.innerHTML = `<div class="err"><b>${esc(title)}</b><br>${detailHtml ?? ''}</div>`;
+      dataTable.style.display = 'none';
+    }
+
+    function renderLoading() {
+      tblStatus.innerHTML = `<div class="loading">불러오는 중…</div>`;
+      dataTable.style.display = 'none';
+    }
+
+    function renderEmpty() {
+      tblStatus.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📭</div>
+          <div style="font-weight:700; color:var(--sub); margin-bottom:4px;">접수된 문의가 없습니다</div>
+          <div style="font-size:12.5px;">랜딩 폼(#inquiry)에서 첫 상담을 접수해 보세요.</div>
+        </div>`;
+      dataTable.style.display = 'none';
+    }
+
+    // ─── 데이터 불러오기 ───
+    async function loadData() {
+      renderLoading();
+      try {
+        // prof_notes는 SELECT 컬럼에서 제외 (RLS/GRANT로도 차단됨)
+        const { data, error } = await supabaseClient
+          .from('reservations')
+          .select('id, school, contact_name, email, program, size, term, note, status, created_at, updated_at')
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        allData = data ?? [];
+        $('lastSync').textContent = `마지막 갱신: ${new Date().toLocaleTimeString('ko-KR')}`;
+        applyFilters();
+      } catch (err) {
+        console.error(err);
+        renderError(
+          '데이터를 불러오지 못했습니다.',
+          `<code>${esc(err.message)}</code><br>SELECT 정책이 설정됐는지 확인하세요 (Day 13 admin_policy_extend.sql).`
+        );
+      }
+    }
+
+    // ─── 필터·검색·렌더 ───
+    function applyFilters() {
+      let rows = allData;
+
+      if (currentStatusFilter !== 'all') {
+        rows = rows.filter(r => (r.status ?? 'new') === currentStatusFilter);
+      }
+      if (currentSearch) {
+        const q = currentSearch.toLowerCase().trim();
+        rows = rows.filter(r =>
+          (r.school       ?? '').toLowerCase().includes(q) ||
+          (r.contact_name ?? '').toLowerCase().includes(q) ||
+          (r.email        ?? '').toLowerCase().includes(q) ||
+          (r.program      ?? '').toLowerCase().includes(q) ||
+          (r.note         ?? '').toLowerCase().includes(q)
+        );
+      }
+
+      // KPI 갱신 (필터 안 걸린 원본 기준)
+      $('kpiTotal').textContent = allData.length;
+      $('kpiToday').textContent = allData.filter(r => isToday(r.created_at)).length;
+      $('kpiNew').textContent   = allData.filter(r => (r.status ?? 'new') === 'new').length;
+      $('kpiPilot').textContent = allData.filter(r => r.status === 'pilot').length;
+
+      // 필터 탭 count
+      $('c-all').textContent       = allData.length;
+      $('c-new').textContent       = allData.filter(r => (r.status ?? 'new') === 'new').length;
+      $('c-contacted').textContent = allData.filter(r => r.status === 'contacted').length;
+      $('c-pilot').textContent     = allData.filter(r => r.status === 'pilot').length;
+      $('c-closed').textContent    = allData.filter(r => r.status === 'closed').length;
+
+      renderTable(rows);
+    }
+
+    function renderTable(rows) {
+      if (!rows || rows.length === 0) {
+        renderEmpty();
+        return;
+      }
+      tblStatus.innerHTML = '';
+      dataTable.style.display = 'table';
+      dataBody.innerHTML = rows.map(r => {
+        const status = r.status ?? 'new';
+        return `
+          <tr data-id="${esc(r.id)}">
+            <td class="cell-time" title="${esc(new Date(r.created_at).toLocaleString('ko-KR'))}">${esc(fmtTime(r.created_at))}</td>
+            <td class="cell-school">${esc(r.school)}</td>
+            <td class="cell-contact">
+              <b>${esc(r.contact_name)}</b>
+              <a href="mailto:${esc(r.email)}?subject=[OINS] ${esc(r.school)} 도입 상담 회신" style="color:var(--sub); text-decoration:none;">${esc(r.email)}</a>
+            </td>
+            <td class="cell-program">${esc(r.program)}</td>
+            <td class="cell-size">${esc(r.size)}<span class="unit">명</span></td>
+            <td class="cell-term">${esc(r.term ?? '미정')}</td>
+            <td class="cell-note">
+              <textarea data-field="note" data-id="${esc(r.id)}" placeholder="회신 내용·다음 액션…">${esc(r.note ?? '')}</textarea>
+            </td>
+            <td>
+              <select class="status-select st-${esc(status)}" data-field="status" data-id="${esc(r.id)}">
+                <option value="new"       ${status==='new'?'selected':''}>신규</option>
+                <option value="contacted" ${status==='contacted'?'selected':''}>회신함</option>
+                <option value="pilot"     ${status==='pilot'?'selected':''}>파일럿</option>
+                <option value="closed"    ${status==='closed'?'selected':''}>종결</option>
+              </select>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    // ─── 인라인 편집 (status 드롭다운 · note 텍스트 area) ───
+    async function updateField(id, field, value) {
+      try {
+        const payload = { [field]: value };
+        const { error } = await supabaseClient
+          .from('reservations')
+          .update(payload)
+          .eq('id', id);
+        if (error) throw error;
+
+        // 로컬 데이터도 갱신
+        const row = allData.find(r => r.id === id);
+        if (row) row[field] = value;
+        applyFilters();
+
+        toast(`${field === 'status' ? '상태' : '메모'} 저장됨`);
+      } catch (err) {
+        console.error(err);
+        toast(`저장 실패: ${err.message}`, 'err');
+      }
+    }
+
+    // 이벤트 위임
+    dataBody.addEventListener('change', (e) => {
+      const el = e.target;
+      if (el.matches('select[data-field="status"]')) {
+        const id = el.dataset.id;
+        const value = el.value;
+        // 색상 클래스 즉시 반영
+        el.className = `status-select st-${value}`;
+        updateField(id, 'status', value);
+      }
+    });
+
+    // note는 blur 시 저장 (타이핑 중마다 저장하지 않도록 debounce 대신 blur)
+    dataBody.addEventListener('blur', (e) => {
+      const el = e.target;
+      if (el.matches('textarea[data-field="note"]')) {
+        const id = el.dataset.id;
+        const value = el.value.trim();
+        const row = allData.find(r => r.id === id);
+        if (row && (row.note ?? '') !== value) {
+          updateField(id, 'note', value);
+        }
+      }
+    }, true);
+
+    // 검색
+    searchInp.addEventListener('input', () => {
+      currentSearch = searchInp.value;
+      applyFilters();
+    });
+
+    // 필터 탭
+    filterTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-tab');
+      if (!btn) return;
+      filterTabs.querySelectorAll('.filter-tab').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      currentStatusFilter = btn.dataset.status;
+      applyFilters();
+    });
+
+    // 새로고침
+    btnRefresh.addEventListener('click', loadData);
+
+    // 첫 로드
+    loadData();
+
+    // 30초마다 자동 새로고침 (탭이 활성일 때만)
+    setInterval(() => {
+      if (!document.hidden) loadData();
+    }, 30_000);
+  </script>
+</body>
+</html>
