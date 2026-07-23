@@ -508,24 +508,32 @@
       setTimeout(() => toastEl.classList.remove('show'), 2400);
     }
 
+    // 이 함수들은 SUPABASE_ENABLED 체크 시점(변수 초기화 전)에도 호출될 수 있으므로
+    // 클로저 캡처 대신 매번 getElementById로 직접 참조 (TDZ 회피).
     function renderError(title, detailHtml) {
-      tblStatus.innerHTML = `<div class="err"><b>${esc(title)}</b><br>${detailHtml ?? ''}</div>`;
-      dataTable.style.display = 'none';
+      const s = document.getElementById('tableStatus');
+      const t = document.getElementById('dataTable');
+      if (s) s.innerHTML = `<div class="err"><b>${esc(title)}</b><br>${detailHtml ?? ''}</div>`;
+      if (t) t.style.display = 'none';
     }
 
     function renderLoading() {
-      tblStatus.innerHTML = `<div class="loading">불러오는 중…</div>`;
-      dataTable.style.display = 'none';
+      const s = document.getElementById('tableStatus');
+      const t = document.getElementById('dataTable');
+      if (s) s.innerHTML = `<div class="loading">불러오는 중…</div>`;
+      if (t) t.style.display = 'none';
     }
 
     function renderEmpty() {
-      tblStatus.innerHTML = `
+      const s = document.getElementById('tableStatus');
+      const t = document.getElementById('dataTable');
+      if (s) s.innerHTML = `
         <div class="empty">
           <div class="empty-icon">📭</div>
           <div style="font-weight:700; color:var(--sub); margin-bottom:4px;">접수된 문의가 없습니다</div>
           <div style="font-size:12.5px;">랜딩 폼(#inquiry)에서 첫 상담을 접수해 보세요.</div>
         </div>`;
-      dataTable.style.display = 'none';
+      if (t) t.style.display = 'none';
     }
 
     // ─── 데이터 불러오기 ───
